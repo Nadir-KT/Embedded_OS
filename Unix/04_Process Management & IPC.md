@@ -15,7 +15,8 @@ In embedded Linux, you'll write programs that:
 --------------------------------------------------------------------------------
 1.1 What is a Process?
 --------------------------------------------------------------------------------
-A process is an instance of a program in execution. When you launch a program, the Linux kernel loads its code into memory, allocates resources, and begins to execute it. This running entity is a process. 
+A process is an instance of a program in execution. When you launch a program, the Linux kernel loads its code into memory, allocates resources, and begins to execute it. This running entity is a process.
+
 When you launch a program (`./my_program`), the Linux kernel does the following:
 
 - Loads Code: Reads the executable file from disk into memory.
