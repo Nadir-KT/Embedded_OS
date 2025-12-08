@@ -3,7 +3,7 @@ Process Management & IPC NOTES
 ================================================================================
 
 --------------------------------------------------------------------------------
-1. Processes, Forking, and Daemons
+1 Processes, Forking, and Daemons
 --------------------------------------------------------------------------------
 In embedded Linux, you'll write programs that:
 
@@ -40,7 +40,7 @@ Common Commands for Process Inspection:
 -   `kill <PID>`: Send a signal to a process (e.g., `kill -9 1234` sends SIGKILL).
 
 --------------------------------------------------------------------------------
-4. Threads vs. Processes
+1.2 Threads vs. Processes
 --------------------------------------------------------------------------------
 Processes are independent and have separate memory spaces. Communication between them requires IPC mechanisms.
 Threads (lightweight processes) exist within a process and share the same memory space, file descriptors, and other resources. This makes communication between threads easier and faster but also means a faulty thread can crash the entire process.
@@ -58,7 +58,7 @@ When to use which?
 -   Use multiple threads for tasks that need to share data frequently and have low-latency communication (e.g., a web server handling multiple requests).
 
 --------------------------------------------------------------------------------
-1.2 Process States and Lifecycle
+1.3 Process States and Lifecycle
 --------------------------------------------------------------------------------
 Processes in Linux transition through various states during their lifecycle:
 
@@ -74,7 +74,7 @@ Lifecycle: A process starts as Running, may sleep for resources, and ends as Zom
 - Long-running embedded systems should monitor for zombies to avoid process table exhaustion.
 
 --------------------------------------------------------------------------------
-1.3 How Processes Are Created (fork)
+1.4 How Processes Are Created (fork)
 --------------------------------------------------------------------------------
 
 In Linux, every new process is created by forking an existing process.
@@ -102,7 +102,7 @@ Important variants and caveats:
 - `clone()` allows fine-grained resource sharing (used by `pthread`, containers, etc.).
 
 --------------------------------------------------------------------------------
-1.4 Understanding fork()
+1.5 Understanding fork()
 --------------------------------------------------------------------------------
 Goal: Let's write a simple program to see fork() in action.
 Create a file: nano fork_demo.c
@@ -179,7 +179,7 @@ Process isolation means one crashing component doesn't kill everything
 You need to understand this to debug why processes become zombies
 
 --------------------------------------------------------------------------------
-1.5 fork() + exec() Pattern
+1.6 fork() + exec() Pattern
 --------------------------------------------------------------------------------
 
 Usually after forking, the child process runs a different program using exec().
@@ -201,7 +201,7 @@ Parent waits for child to finish
 In multithreaded programs, avoid doing complex work between `fork()` and `exec()` — only call async-signal-safe functions.
 
 --------------------------------------------------------------------------------
-1.6 Waiting for Child Processes: `wait()` and `waitpid()`
+1.7 Waiting for Child Processes: `wait()` and `waitpid()`
 --------------------------------------------------------------------------------
 
 A parent process should always clean up its children to prevent zombie processes. This is done by waiting for the child to terminate and reading its exit status.
@@ -231,7 +231,7 @@ int main() {
 ```
 
 --------------------------------------------------------------------------------
-3. Creating Processes: `fork()`, `exec()`, `wait()`
+1.8 Creating Processes: `fork()`, `exec()`, `wait()`
 --------------------------------------------------------------------------------
 
 ### The `fork()` System Call
@@ -298,17 +298,17 @@ A parent must clean up after its children. This is called "reaping".
 -   **Orphan**: A child whose parent terminates before it does. Orphaned processes are "adopted" by the `init` process (PID 1), which automatically reaps them to prevent them from becoming zombies forever.
 
 --------------------------------------------------------------------------------
-1.7 Orphan Processes
+1.8 Orphan Processes
 --------------------------------------------------------------------------------
 An orphan process is a child process whose parent has terminated before the child. In Linux, orphan processes are automatically adopted by the init process (PID 1, typically systemd). This prevents accumulation of zombies and ensures proper cleanup. If a parent exits without waiting for its children, the children become orphans and are reparented to init, which periodically reaps them.
 
 --------------------------------------------------------------------------------
-5.2 Process Termination
+1.9 Process Termination
 --------------------------------------------------------------------------------
 Processes terminate via exit() or return from main(). Exit status (0-255) indicates success/failure. Parent uses wait() to retrieve status. In embedded systems, ensure proper cleanup to avoid resource leaks. Use _exit() in forked children to avoid flushing buffers twice.
 
 --------------------------------------------------------------------------------
-1.8 Zombie Processes and a Better fork() Pattern
+1.10 Zombie Processes and a Better fork() Pattern
 --------------------------------------------------------------------------------
 
 What happens if a child finishes before the parent is done?
@@ -392,7 +392,7 @@ gcc fork_wait_demo.c -o fork_wait_demo
 With `wait()`, the parent will pause until the child has completed. This is a much safer and more robust way to manage child processes.
 
 --------------------------------------------------------------------------------
-1.9 Daemons: Background Processes
+1.11 Daemons: Background Processes
 --------------------------------------------------------------------------------
 A daemon is a process that runs in the background, without being attached to a controlling terminal.
 
@@ -466,7 +466,7 @@ Then, use `systemctl` to manage the service:
 *   `sudo systemctl status my_daemon`
 
 --------------------------------------------------------------------------------
-2. Signals and Signal Handling
+2 Signals and Signal Handling
 --------------------------------------------------------------------------------
 
 Signals are asynchronous software interrupts delivered to a process.
@@ -530,7 +530,7 @@ int main() {
 ```
 
 --------------------------------------------------------------------------------
-3. Process Scheduling
+3 Process Scheduling
 --------------------------------------------------------------------------------
 Linux uses a scheduler to allocate CPU time. Key concepts:
 - Priorities/Nice value: Priority adjustment hint to the scheduler (-20 highest, 19 lowest). Use nice() or renice.
@@ -551,7 +551,7 @@ In embedded systems, adjust priorities for critical processes.
 Resource Limits: The `getrlimit()` and `setrlimit()` system calls allow a process to control its consumption of system resources, such as CPU time, memory, and open files.
 
 --------------------------------------------------------------------------------
-8. Inter-Process Communication (IPC)
+4 Inter-Process Communication (IPC)
 --------------------------------------------------------------------------------
 
 Processes can communicate with each other using various IPC mechanisms. POSIX IPC is generally preferred over the older System V IPC.
